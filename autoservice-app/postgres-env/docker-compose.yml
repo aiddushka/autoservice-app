@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:17
+    container_name: autoservice-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: autoservice
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./backup:/backup
+      - ./init:/docker-entrypoint-initdb.d
+    restart: always
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: autoservice-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    restart: always
+
+volumes:
+  db_data:
