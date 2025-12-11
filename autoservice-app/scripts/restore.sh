@@ -1,3 +1,3 @@
 #!/bin/bash
-psql -U postgres autoservice < backup.sql
+psql -U postgres -d autoservice < /backup/backup.sql
 echo "Database restored"

@@ -1,16 +1,6 @@
-version: "3.9"
+version: '3.8'
 
 services:
-  api:
-    build: .
-    container_name: autoservice-api
-    ports:
-      - "8000:8000"
-    env_file: .env
-    depends_on:
-      - db
-    restart: always
-
   db:
     image: postgres:15
     container_name: autoservice-db
@@ -21,7 +11,53 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: autoservice-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@autoservice.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    ports:
+      - "5050:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    restart: unless-stopped
+
+web:
+  build: .
+  container_name: autoservice-web
+  ports:
+    - "5000:5000"
+  environment:
+    DATABASE_URL: postgresql://postgres:postgres@db:5432/autoservice
+    SECRET_KEY: tutturu123@@
+    FLASK_APP: app
+    FLASK_ENV: production
+  depends_on:
+    db:
+      condition: service_healthy
+  volumes:
+    - ./app:/app
+    - ./requirements.txt:/app/requirements.txt
+  # Используйте flask run вместо gunicorn для отладки
+  command: >
+    sh -c "cd /app && flask run --host=0.0.0.0 --port=5000 --debug"
+  restart: unless-stopped
 
 volumes:
-  db_data:
+  postgres_data:
+  pgadmin_data:

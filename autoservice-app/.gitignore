@@ -1,23 +1,14 @@
-# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-
-# Env
-.env
-*.env
-
-# VS Code
+.Python
+venv/
+env/
 .vscode/
-
-# Byte-compiled
-*.py[cod]
-
-# Docker
+.idea/
+*.sqlite3
 *.log
-*.pid
-
-# OS
+.git/
+.gitignore
 .DS_Store
-Thumbs.db

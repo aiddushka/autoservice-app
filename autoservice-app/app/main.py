@@ -1,8 +1,7 @@
-from fastapi import FastAPI
-from app.routes import main, admin, documents
+from flask import Blueprint, render_template
 
-app = FastAPI(title="Autoservice API")
+main_bp = Blueprint("main", __name__)
 
-app.include_router(main.router)
-app.include_router(admin.router)
-app.include_router(documents.router)
+@main_bp.route("/")
+def index():
+    return render_template("index.html")
