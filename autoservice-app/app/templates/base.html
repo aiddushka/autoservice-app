@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoService - {% block title %}Главная{% endblock %}</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: #f8f9fa; 
+            color: #333;
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+        header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 15px 0;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+        }
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-2px);
+        }
+        .nav-links a.active {
+            background: rgba(255,255,255,0.25);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0,0,0,0.2);
+            padding: 6px 15px;
+            border-radius: 20px;
+            margin-left: 10px;
+        }
+        .user-icon {
+            font-size: 18px;
+        }
+        .username {
+            font-weight: 600;
+            font-size: 15px;
+        }
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        .logout-btn:hover {
+            background: #c0392b;
+            text-decoration: none;
+        }
+        .content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            min-height: 400px;
+        }
+        .alert {
+            padding: 12px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-color: #bee5eb;
+        }
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-color: #ffeaa7;
+        }
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+        .json-container {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        .json-key { color: #3498db; }
+        .json-string { color: #2ecc71; }
+        .json-number { color: #e74c3c; }
+        .json-boolean { color: #9b59b6; }
+        .json-null { color: #95a5a6; }
+        footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #666;
+            text-align: center;
+            font-size: 14px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 25px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+            text-decoration: none;
+        }
+        .btn-secondary {
+            background: #95a5a6;
+        }
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <nav>
+                <a href="/" class="logo">🏎️ AutoService</a>
+                <ul class="nav-links">
+                    <li><a href="/" {% if request.path == '/' %}class="active"{% endif %}>🏠 Главная</a></li>
+                    
+                    {% if session.get('logged_in') %}
+                        <!-- Эти кнопки появляются только после входа -->
+                        <li><a href="/employees/" {% if request.path.startswith('/employees') %}class="active"{% endif %}>👥 Сотрудники</a></li>
+                        <li><a href="/documents/" {% if request.path.startswith('/documents') %}class="active"{% endif %}>📄 Документы</a></li>
+                        
+                        <div class="user-info">
+                            <span class="user-icon">👤</span>
+                            <span class="username">{{ session.get('login', 'Пользователь') }}</span>
+                            <a href="/auth/logout" class="logout-btn">Выйти</a>
+                        </div>
+                    {% else %}
+                        <li><a href="/auth/login" {% if request.path.startswith('/auth/login') %}class="active"{% endif %}>🔑 Войти</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </header>
+        
+        <!-- Флеш-сообщения -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <main class="content">
+            {% block content %}{% endblock %}
+        </main>
+        
+        <footer>
+            <p>AutoService System © 2025 | Демо-версия | PostgreSQL + Flask</p>
+            <p style="font-size: 12px; color: #999; margin-top: 5px;">
+                Текущий пользователь: {{ session.get('login', 'не авторизован') }} | 
+                Режим: {{ 'авторизован' if session.get('logged_in') else 'гость' }}
+            </p>
+        </footer>
+    </div>
+    
+    <script>
+        // Подсветка JSON
+        function highlightJson() {
+            const preElements = document.querySelectorAll('.json-container');
+            preElements.forEach(container => {
+                let content = container.innerHTML;
+                
+                // Экранирование HTML
+                content = content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                
+                // Подсветка
+                content = content.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(?=\s*:))/g, 
+                    '<span class="json-key">$1</span>');
+                content = content.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(?!\s*:))/g, 
+                    '<span class="json-string">$1</span>');
+                content = content.replace(/\b(-?\d+(\.\d+)?(e[+-]?\d+)?)\b/g, 
+                    '<span class="json-number">$1</span>');
+                content = content.replace(/\b(true|false)\b/g, 
+                    '<span class="json-boolean">$1</span>');
+                content = content.replace(/\bnull\b/g, 
+                    '<span class="json-null">null</span>');
+                
+                container.innerHTML = content;
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', highlightJson);
+        
+        // Автоматическое скрытие сообщений через 5 секунд
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

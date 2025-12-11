@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Загрузить документ</h2>
+  <form method="post" enctype="multipart/form-data">
+    <label>Название: <input name="title" required></label><br>
+    <label>Уровень доступа:
+      <select name="accesslevel">
+        <option>Public</option>
+        <option>Internal</option>
+        <option>Strictly</option>
+      </select>
+    </label><br>
+    <label>Файл: <input name="file" type="file" required></label><br>
+    <button type="submit">Загрузить</button>
+  </form>
+{% endblock %}

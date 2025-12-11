@@ -1,0 +1,5 @@
+body { font-family: Arial, sans-serif; margin: 20px; }
+header { margin-bottom: 20px; }
+.flashes li { list-style: none; padding: 6px; margin: 6px 0; border-radius: 4px; }
+.flashes .success { background: #cce5cc; }
+.flashes .danger { background: #f7c6c6; }

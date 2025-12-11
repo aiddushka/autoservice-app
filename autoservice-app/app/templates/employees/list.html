@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Сотрудники{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1 style="margin: 0;">👥 Сотрудники</h1>
+    <div style="display: flex; gap: 10px;">
+        <form method="GET" action="{{ url_for('employees.search_employees') }}" style="display: flex; gap: 10px;">
+            <input type="text" name="q" placeholder="Поиск сотрудников..." 
+                   style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+            <button type="submit" 
+                    style="padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                🔍 Поиск
+            </button>
+        </form>
+        <a href="{{ url_for('employees.add_employee') }}" class="btn" style="background: #27ae60;">
+            ➕ Добавить сотрудника
+        </a>
+    </div>
+</div>
+
+{% if search_query %}
+<div style="margin-bottom: 20px; padding: 15px; background: #e8f4fc; border-radius: 6px;">
+    <p style="margin: 0;">
+        🔍 Результаты поиска по запросу: <strong>"{{ search_query }}"</strong>
+        <a href="{{ url_for('employees.list_employees') }}" style="margin-left: 15px; color: #3498db;">
+            ✖ Очистить поиск
+        </a>
+    </p>
+</div>
+{% endif %}
+
+<div style="margin-bottom: 20px;">
+    <p style="color: #666;">
+        Всего сотрудников: {{ count }}
+        {% if employeeid %}
+            | Ваш ID: {{ employeeid }}
+        {% endif %}
+    </p>
+</div>
+
+{% if rows %}
+    <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; min-width: 800px;">
+                <thead style="background: #2c3e50; color: white;">
+                    <tr>
+                        {% for col in cols %}
+                        <th style="padding: 15px; text-align: left; white-space: nowrap;">{{ col }}</th>
+                        {% endfor %}
+                        <th style="padding: 15px; text-align: left;">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                    <tr style="border-bottom: 1px solid #eee; {% if row[0] == employeeid %}background: #f8f9fa;{% endif %}">
+                        {% for value in row %}
+                        <td style="padding: 15px; {% if loop.index == 1 %}font-weight: bold; color: #2c3e50;{% endif %}">
+                            {% if loop.index == 7 and value is number %}
+                                {{ "{:,.2f} ₽".format(value).replace(",", " ") }}
+                            {% elif value is none %}
+                                <span style="color: #999;">—</span>
+                            {% else %}
+                                {{ value }}
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                        <td style="padding: 15px;">
+                            <div style="display: flex; gap: 8px;">
+                                <a href="{{ url_for('employees.view_employee', employee_id=row[0]) }}" 
+                                   style="padding: 5px 10px; background: #3498db; color: white; border-radius: 4px; text-decoration: none; font-size: 12px;">
+                                    👁️ Просмотр
+                                </a>
+                                <a href="{{ url_for('documents.list_documents') }}?employee={{ row[0] }}" 
+                                   style="padding: 5px 10px; background: #9b59b6; color: white; border-radius: 4px; text-decoration: none; font-size: 12px;">
+                                    📄 Документы
+                                </a>
+                                {% if row[0] == employeeid %}
+                                <span style="padding: 5px 10px; background: #f39c12; color: white; border-radius: 4px; font-size: 12px;">
+                                    👤 Вы
+                                </span>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% else %}
+    <div style="text-align: center; padding: 60px 20px; background: #f8f9fa; border-radius: 8px;">
+        <div style="font-size: 60px; margin-bottom: 20px;">👥</div>
+        <h3 style="color: #6c757d; margin-bottom: 15px;">Сотрудники не найдены</h3>
+        <p style="color: #999; margin-bottom: 30px;">
+            {% if search_query %}
+                По вашему запросу ничего не найдено
+            {% else %}
+                В базе данных нет сотрудников
+            {% endif %}
+        </p>
+        {% if search_query %}
+        <a href="{{ url_for('employees.list_employees') }}" class="btn" style="padding: 12px 30px;">
+            ← Назад к списку
+        </a>
+        {% else %}
+        <a href="{{ url_for('employees.add_employee') }}" class="btn" style="padding: 12px 30px;">
+            ➕ Добавить первого сотрудника
+        </a>
+        {% endif %}
+    </div>
+{% endif %}
+
+<div style="margin-top: 40px;">
+    <h3>📊 API доступ</h3>
+    <p>Для программного доступа к данным сотрудников используйте:</p>
+    <div style="background: #2c3e50; color: white; padding: 15px; border-radius: 6px; font-family: monospace;">
+        GET /employees/api/list
+    </div>
+    <a href="/employees/api/list" target="_blank" style="display: inline-block; margin-top: 10px; color: #3498db;">
+        🔗 Открыть API в новой вкладке
+    </a>
+</div>
+
+<style>
+    @media (max-width: 768px) {
+        table {
+            display: block;
+        }
+        th, td {
+            padding: 10px !important;
+            font-size: 14px;
+        }
+    }
+</style>
+{% endblock %}

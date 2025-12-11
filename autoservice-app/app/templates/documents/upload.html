@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Загрузка документа{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <h1 style="margin-bottom: 30px;">📤 Загрузка нового документа</h1>
+    
+    <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 15px rgba(0,0,0,0.05);">
+        <form method="POST" action="{{ url_for('documents.upload_document') }}" enctype="multipart/form-data">
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #2c3e50;">
+                    Название документа *
+                </label>
+                <input type="text" name="title" required 
+                       style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;"
+                       placeholder="Например: Отчет о проделанной работе">
+            </div>
+            
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #2c3e50;">
+                    Уровень доступа
+                </label>
+                <select name="accesslevel"

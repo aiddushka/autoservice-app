@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 0 auto; text-align: center;">
+    <h2 style="margin-bottom: 30px;">Вход в систему AutoService</h2>
+    
+    <div style="background: #f8f9fa; padding: 30px; border-radius: 8px; margin-bottom: 20px;">
+        <p style="margin-bottom: 25px;">Для входа в демо-режиме нажмите кнопку ниже</p>
+        <p style="color: #666; font-size: 14px; margin-bottom: 20px;">
+            Вы войдете как: <strong>e_volkova</strong> (Елена Волкова)
+        </p>
+        
+        <form method="POST" action="{{ url_for('auth.login') }}">
+            <input type="hidden" name="login" value="e_volkova">
+            <input type="hidden" name="password" value="demo">
+            
+            <button type="submit" 
+                    style="width: 100%; padding: 14px; 
+                           background: linear-gradient(135deg, #3498db, #2c3e50); 
+                           color: white; border: none; border-radius: 6px; 
+                           font-size: 16px; cursor: pointer; font-weight: bold;">
+                🔐 Войти как e_volkova
+            </button>
+        </form>
+    </div>
+    
+    <div style="margin-top: 30px; padding: 20px; background: #fff3cd; border-radius: 6px; border-left: 4px solid #ffc107;">
+        <h4 style="margin-top: 0; color: #856404;">Демо-режим</h4>
+        <p style="color: #856404; margin: 0; font-size: 14px;">
+            В демо-версии пропущена проверка пароля. В реальном приложении 
+            будет проверка через базу данных PostgreSQL.
+        </p>
+    </div>
+</div>
+{% endblock %}

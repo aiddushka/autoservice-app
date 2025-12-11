@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Документы{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1 style="margin: 0;">📄 Документы</h1>
+    <a href="{{ url_for('documents.upload_document') }}" class="btn" style="background: #27ae60;">
+        📤 Загрузить новый документ
+    </a>
+</div>
+
+<div style="margin-bottom: 20px;">
+    <p style="color: #666;">
+        Всего документов: {{ documents|length }}
+        {% if department_id %}
+            | Ваш отдел: {{ department_id }}
+        {% endif %}
+    </p>
+</div>
+
+{% if documents %}
+    <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead style="background: #2c3e50; color: white;">
+                <tr>
+                    <th style="padding: 15px; text-align: left;">ID</th>
+                    <th style="padding: 15px; text-align: left;">Название</th>
+                    <th style="padding: 15px; text-align: left;">Уровень доступа</th>
+                    <th style="padding: 15px; text-align: left;">Дата создания</th>
+                    <th style="padding: 15px; text-align: left;">Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in documents %}
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 15px;">{{ doc[0] }}</td>
+                    <td style="padding: 15px;">
+                        <a href="{{ url_for('documents.view_document', docid=doc[0]) }}" style="color: #3498db; text-decoration: none; font-weight: 500;">
+                            {{ doc[1] }}
+                        </a>
+                    </td>
+                    <td style="padding: 15px;">
+                        {% if doc[2] == 'Public' %}
+                        <span style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; background: #d4edda; color: #155724;">
+                            {{ doc[2] }}
+                        </span>
+                        {% elif doc[2] == 'Internal' %}
+                        <span style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; background: #d1ecf1; color: #0c5460;">
+                            {{ doc[2] }}
+                        </span>
+                        {% elif doc[2] == 'Confidential' %}
+                        <span style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; background: #fff3cd; color: #856404;">
+                            {{ doc[2] }}
+                        </span>
+                        {% elif doc[2] == 'TopSecret' %}
+                        <span style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; background: #f8d7da; color: #721c24;">
+                            {{ doc[2] }}
+                        </span>
+                        {% else %}
+                        <span style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; background: #f8f9fa; color: #6c757d;">
+                            {{ doc[2] }}
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 15px; color: #666;">{{ doc[3] }}</td>
+                    <td style="padding: 15px;">
+                        <div style="display: flex; gap: 10px;">
+                            <a href="{{ url_for('documents.view_document', docid=doc[0]) }}" 
+                               style="padding: 6px 12px; background: #3498db; color: white; border-radius: 4px; text-decoration: none; font-size: 13px;">
+                                👁️ Просмотр
+                            </a>
+                            <a href="{{ url_for('documents.edit_document', docid=doc[0]) }}" 
+                               style="padding: 6px 12px; background: #f39c12; color: white; border-radius: 4px; text-decoration: none; font-size: 13px;">
+                                ✏️ Редактировать
+                            </a>
+                            <a href="{{ url_for('documents.download_document', docid=doc[0]) }}" 
+                               style="padding: 6px 12px; background: #27ae60; color: white; border-radius: 4px; text-decoration: none; font-size: 13px;">
+                                📥 Скачать
+                            </a>
+                            <button data-docid="{{ doc[0] }}" data-doctitle="{{ doc[1] }}" class="delete-doc-btn"
+                                    style="padding: 6px 12px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;">
+                                🗑️ Удалить
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div style="text-align: center; padding: 60px 20px; background: #f8f9fa; border-radius: 8px;">
+        <div style="font-size: 60px; margin-bottom: 20px;">📂</div>
+        <h3 style="color: #6c757d; margin-bottom: 15px;">Документы не найдены</h3>
+        <p style="color: #999; margin-bottom: 30px;">Загрузите первый документ в систему</p>
+        <a href="{{ url_for('documents.upload_document') }}" class="btn" style="padding: 12px 30px;">
+            📤 Загрузить документ
+        </a>
+    </div>
+{% endif %}
+
+<script>
+function deleteDocument(docid, title) {
+    if (confirm(`Вы уверены, что хотите удалить документ "${title}"?`)) {
+        fetch(`/documents/delete/${docid}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('Ошибка: ' + data.error);
+            }
+        })
+        .catch(error => {
+            alert('Ошибка сети: ' + error);
+        });
+    }
+}
+</script>
+
+<div style="margin-top: 40px;">
+    <h3>📊 API доступ</h3>
+    <p>Для программного доступа к документам используйте:</p>
+    <div style="background: #2c3e50; color: white; padding: 15px; border-radius: 6px; font-family: monospace;">
+        GET /documents/api/list
+    </div>
+    <a href="/documents/api/list" target="_blank" style="display: inline-block; margin-top: 10px; color: #3498db;">
+        🔗 Открыть API в новой вкладке
+    </a>
+</div>
+{% endblock %}

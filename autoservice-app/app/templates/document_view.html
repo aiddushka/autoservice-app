@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>{{ title }}</h2>
+  <pre style="white-space: pre-wrap;">{{ content }}</pre>
+  <a href="{{ url_for('documents.download_document', docid=request.view_args.docid) }}">Скачать</a> |
+  <a href="{{ url_for('documents.list_documents') }}">Назад</a>
+{% endblock %}
